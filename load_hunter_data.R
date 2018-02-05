@@ -68,6 +68,8 @@ load_hunter_LGA <- function(parcel_mask, data_folder){
 
 load_saved_LGA = TRUE
 use_z_layer = TRUE
+sample_decline_rate = FALSE
+
 max_eco_val = 100
 mean_decline_rate = -0.02
 decline_rate_std = 0.005
@@ -127,7 +129,7 @@ objects_to_save$offset_weights <- initialise_weighted_probability(objects_to_sav
                                                   parcels$land_parcels)
 
 objects_to_save$decline_rates_initial = simulate_decline_rates(parcel_num = length(parcels$land_parcels), 
-                                                               sample_decline_rate = TRUE, 
+                                                               sample_decline_rate, 
                                                                rep(list(mean_decline_rate), dim(species_raster)[3]), 
                                                                rep(list(decline_rate_std), dim(species_raster)[3]))
 

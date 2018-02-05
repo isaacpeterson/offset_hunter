@@ -28,15 +28,15 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1:5
+  simulation_params$features_to_use_in_simulation = 2:54
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
-  simulation_params$features_to_use_in_offset_calc = 1:5
+  simulation_params$features_to_use_in_offset_calc = 2:54
   
-  simulation_params$features_to_use_in_offset_intervention = 1:5
+  simulation_params$features_to_use_in_offset_intervention = 2:54
   
   # The total number of parcels that will be developed
-  simulation_params$total_dev_num = 40
+  simulation_params$total_dev_num = 400
   
   # The time step at which development starts
   simulation_params$dev_start = 1
@@ -55,10 +55,10 @@ initialise_user_simulation_params <- function(){
   simulation_params$limit_offset_restoration = TRUE
   
   # The probability per parcel of it being stochasticly cleared, every parcel gets set to this number - set to zero to turn off
-  simulation_params$stochastic_loss_prob = 0
+  simulation_params$stochastic_loss_prob = 0.001
   
   # Exclude parcels with less than this number of pixels.
-  simulation_params$site_screen_size = 50
+  simulation_params$site_screen_size = 2
   
   # The mean and the standard deviation of a normal distribution from which to sample the restoration parameters from
   simulation_params$restoration_rate = 0.02
