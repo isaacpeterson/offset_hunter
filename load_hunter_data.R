@@ -66,13 +66,11 @@ load_hunter_LGA <- function(parcel_mask, data_folder){
 }
 
 
-load_saved_LGA = TRUE
+load_saved_LGA = FALSE
 use_z_layer = TRUE
 max_eco_val = 100
 mean_decline_rate = -0.02
 decline_rate_std = 0.005
-
-
 
 ecology_params <- initialise_ecology_params()
 data_folder = paste0(path.expand('~'), '/offset_data/hunter/MNES_data/')
@@ -116,7 +114,7 @@ if (load_saved_LGA == TRUE){
 
 landscape_ecology = lapply(seq(dim(species_raster)[3]), function(i) raster_to_array(subset(species_raster, i)))
 objects_to_save$landscape_ecology = scale_ecology(landscape_ecology, ecology_params$max_eco_val, dim(landscape_ecology[[1]]))
-objects_to_save$parcel_ecology <- split_ecology(objects_to_save$landscape_ecology, objects_to_save$parcels$land_parcels)
+objects_to_save$parcel_ecology <- split_ecology(objects_to_save$landscape_ecology, parcels$land_parcels)
 
 mining_raster = load_mining_raster(parcel_mask, current_data_folder = paste0(data_folder, 'mining_scenarios/'))
 objects_to_save$mining_mask = raster_to_array(mining_raster) & (raster_to_array(parcel_mask) > 0)
