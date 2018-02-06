@@ -28,15 +28,15 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 2:54
+  simulation_params$features_to_use_in_simulation = 2:11
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
-  simulation_params$features_to_use_in_offset_calc = 2:54
+  simulation_params$features_to_use_in_offset_calc = 2:11
   
-  simulation_params$features_to_use_in_offset_intervention = 2:54
+  simulation_params$features_to_use_in_offset_intervention = 2:11
   
   # The total number of parcels that will be developed
-  simulation_params$total_dev_num = 400
+  simulation_params$total_dev_num = 1000
   
   # The time step at which development starts
   simulation_params$dev_start = 1
@@ -145,13 +145,13 @@ initialise_user_plot_params <- function(){
   plot_params$nx = 3 
   plot_params$ny = 4
   
-  plot_params$site_outcome_plot_lims_set = rep(list(c(0, 3e4)), 1)
-  plot_params$program_outcome_plot_lims_set = rep(list(c(0e6, 1e7)), 1)
-  plot_params$landscape_outcome_plot_lims_set = rep(list(c(0, 2e7)), 1)
+  plot_params$site_outcome_plot_lims_set = rep(list(c(0, 3e4)), 10)
+  plot_params$program_outcome_plot_lims_set = rep(list(c(0e6, 1e7)), 10)
+  plot_params$landscape_outcome_plot_lims_set = rep(list(c(0, 2e7)), 10)
   
-  plot_params$site_impact_plot_lims_set = rep(list(c(-5e3, 5e3)), 1)
-  plot_params$program_impact_plot_lims_set = rep(list(c(-1e5, 1e5)), 1) 
-  plot_params$landscape_impact_plot_lims_set = rep(list(c(-5e5, 0)), 1)
+  plot_params$site_impact_plot_lims_set = rep(list(c(-5e3, 5e3)), 10)
+  plot_params$program_impact_plot_lims_set = rep(list(c(-1e5, 1e5)), 10) 
+  plot_params$landscape_impact_plot_lims_set = rep(list(c(-5e5, 0)), 10)
   
   
   
