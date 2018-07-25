@@ -66,7 +66,7 @@ load_hunter_LGA <- function(parcel_mask, data_folder){
 }
 
 
-load_saved_LGA = TRUE
+load_parcel_characteristics = TRUE
 use_z_layer = TRUE
 sample_decline_rate = FALSE
 
@@ -86,10 +86,10 @@ protected_areas_raster = load_rasters(paste0(data_folder),
 
 protected_areas_mask = raster_to_array(protected_areas_raster)
 
-
 current_filenames <- list.files(path = paste0(data_folder, 'species_layers_MNES/'), pattern = '.tif', all.files = FALSE, 
                                 full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
                                 include.dirs = FALSE, no.. = FALSE)
+
 species_raster = load_rasters(paste0(data_folder, 'species_layers_MNES/'), current_filenames, 
                               layer_num = 'all')
 
@@ -104,13 +104,13 @@ if (use_z_layer == TRUE){
 
 objects_to_save = list()
 
-if (load_saved_LGA == TRUE){
-  parcels = readRDS(paste0(simulation_inputs_folder, 'parcels.rds'))
+if (load_site_characteristics == TRUE){
+  site_characteristics = readRDS(paste0(simulation_inputs_folder, 'site_characteristics.rds'))
   
 } else { 
   LGA_array <- load_hunter_LGA(parcel_mask, data_folder)
-  objects_to_save$LGA_array = LGA_array
-  parcels <- LGA_to_parcel_list(LGA_array)
+  objects_to_save$site_characteristics = LGA_array
+  site_characteristics <- LGA_to_parcel_list(LGA_array)
   objects_to_save$parcels = parcels
 } 
 
