@@ -65,14 +65,15 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1
+  simulation_params$features_to_use_in_simulation = 1:10
   
+  simulation_params$transform_params = array(1, length(simulation_params$features_to_use_in_simulation))
   # The total number of layers to use in the offset calcuation (iterating from the start)
-  simulation_params$features_to_use_in_offset_calc = 1
+  simulation_params$features_to_use_in_offset_calc = 1:10
   
-  simulation_params$features_to_use_in_offset_intervention = 1 
+  simulation_params$features_to_use_in_offset_intervention = 1:10
   
-  simulation_params$use_offset_metric = FALSE
+  simulation_params$use_offset_metric = TRUE
   
   simulation_params$time_steps = 50
   
@@ -150,7 +151,7 @@ initialise_user_simulation_params <- function(){
 
 user_transform_function <- function(pool_vals, transform_params){
   scaled_scores <- lapply(seq_along(pool_vals), function(i) transform_params[i]/sum(transform_params)*100.68*(1 - exp(-5*( pool_vals[[i]]/transform_params[i] )^2.5) ))
-  BAM_score <- sqrt(Reduce('+', scaled_scores[1:3]) * Reduce('+', scaled_scores[4:5]))
+  BAM_score <- sqrt(Reduce('+', scaled_scores[1:5]) * Reduce('+', scaled_scores[1:5]))
   return(BAM_score)
 }
 
@@ -159,40 +160,10 @@ user_transform_function <- function(pool_vals, transform_params){
 initialise_user_feature_params <- function(){
   
   feature_params = list()
-  # how the feature dynamics are determined
+  
   feature_params$background_dynamics_type = 'site_scale'
   feature_params$management_dynamics_type = 'site_scale'
-  feature_params$scale_features = TRUE
-  feature_params$unique_site_vals = TRUE
-  feature_params$unique_site_modes = TRUE
-  
-  feature_params$site_sample_type = 'trunc_norm'
-  feature_params$initial_site_sd = 0.05
-  
-  feature_params$initial_site_mean_sd = 0.2
-  feature_params$dynamics_sample_type = 'by_initial_value' #'by_initial_value' 
-  # Sample the restoration rates from a uniform distribution to they vary per parcel and per feature
-  feature_params$management_dynamics_sample_type = 'by_initial_value'
-  
-  feature_params$project_by_mean = TRUE
-  
-  feature_params$management_update_dynamics_by_differential = TRUE
-  feature_params$background_update_dynamics_by_differential = TRUE
-  
-  feature_params$perform_management_dynamics_time_shift = FALSE
-  feature_params$perform_background_dynamics_time_shift = FALSE
-  
-  feature_params$update_offset_dynamics_by_time_shift = TRUE
-  
-  feature_params$sample_management_dynamics = TRUE
-  
-  # Sample the background dynamics from a uniform distribution to they vary per site and per feature
-  feature_params$sample_background_dynamics = TRUE
-  feature_params = list()
-  # how the feature dynamics are determined
-  feature_params$background_dynamics_type = 'site_scale'
-  feature_params$management_dynamics_type = 'site_scale'
-  
+  feature_params$scale_features = FALSE
   feature_params$unique_site_vals = TRUE
   feature_params$unique_site_modes = TRUE
   
@@ -221,19 +192,14 @@ initialise_user_feature_params <- function(){
   
   feature_params$simulated_time_vec = 0:80
   
-  feature_params$condition_class_bounds = list(list(c(0, 0.5, 1)), list(c(0, 0.5, 1)), list(c(0, 0.5, 1)), list(c(0, 0.5, 1)))
+  feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), 10)
   
   mean_decline_rate = -0.02
   mean_restoration_rate = 0.04
-  background_logistic_params_set = list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate))),
-                                        list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate))),
-                                        list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate))),
-                                        list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate))))
+
+  background_logistic_params_set = rep(list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate)))), 10)
   
-  management_logistic_params_set = list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06))),
-                                        list(list(c(0.01, mean_restoration_rate),  c(0.01, mean_restoration_rate), c(0.01, mean_restoration_rate))),
-                                        list(list(c(0.01, mean_restoration_rate), c(0.01, mean_restoration_rate), c(0.01, mean_restoration_rate))),
-                                        list(list(c(0.01, mean_restoration_rate),c(0.01, mean_restoration_rate), c(0.01, mean_restoration_rate))))
+  management_logistic_params_set = rep(list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06)))), 10)
   
   feature_params$simulated_time_vec = 0:200
   
@@ -276,21 +242,21 @@ initialise_user_output_params <- function(){
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
-  output_params$plot_offset_metric = FALSE
+  output_params$plot_offset_metric = TRUE
   
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
   output_params$output_plot = TRUE # can be set to 'plot' or 'file'
   output_params$output_csv_file = FALSE # can be set to 'plot' or 'file'
   output_params$plot_subset_type = 'all' #c('offset_action_type') # 'offset_calc_type', 'offset_action_type', offset_time_horizon'
   output_params$plot_subset_param = 'all' #c('maintain') # 'net_gains', 'restore', 15
-  output_params$features_to_plot = 1
+  output_params$features_to_plot = 1:10
   output_params$print_dev_offset_sites = FALSE
-  output_params$sets_to_plot = 1
+  output_params$sets_to_plot = 10
   output_params$site_outcome_plot_lims_set = list(c(0, 1e2))
   output_params$program_outcome_plot_lims_set = list(c(0e6, 1e4))
   output_params$landscape_outcome_plot_lims_set = list(c(0, 2e4))
   output_params$nx = 3 
-  output_params$ny = 1
+  output_params$ny = 4
   output_params$site_impact_plot_lims_set = list(c(-1e2, 1e2), c(-1e2, 1e2), c(-1e2, 1e2), c(-1e3, 1e3), c(-1e3, 1e3), c(-1e3, 1e3))
   output_params$program_impact_plot_lims_set = list(c(-1e4, 1e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4)) 
   output_params$landscape_impact_plot_lims_set = list(c(-1e4, 1e4), c(-1e4, 1e4), c(-1e4, 1e4), c(-1e5, 1e5), c(-1e5, 1e5), c(-1e5, 1e5))
