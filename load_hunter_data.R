@@ -59,6 +59,8 @@ load_hunter_LGA <- function(parcel_mask, data_folder){
   parcels_shp_transform <- spTransform(parcels_shp, GDA94.56) # project to correct CRS
   parcels_shp_cropped <- crop(parcels_shp_transform, extent(parcel_mask))
   parcels_raster = shp_to_raster(shp = parcels_shp_cropped, raster_dims = dim(parcel_mask))
+  
+  
   parcel_array = as.matrix(parcels_raster)
   parcel_array[is.na(parcel_array)] = 0
   
@@ -128,9 +130,5 @@ objects_to_save$offset_mask <- (protected_areas_mask == 3) & !(objects_to_save$m
 objects_to_save$offset_weights <- initialise_weighted_probability(objects_to_save$offset_mask, 
                                                   parcels$land_parcels)
 
-objects_to_save$decline_rates_initial = simulate_decline_rates(parcel_num = length(parcels$land_parcels), 
-                                                               sample_decline_rate, 
-                                                               rep(list(mean_decline_rate), dim(species_raster)[3]), 
-                                                               rep(list(decline_rate_std), dim(species_raster)[3]))
 
 save_simulation_inputs(objects_to_save, simulation_inputs_folder)

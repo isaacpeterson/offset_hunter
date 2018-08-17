@@ -5,10 +5,20 @@ initialise_user_global_params <- function(){
   global_params$simulation_folder = paste0(path.expand('~'), '/offset_data/hunter/')
   
   global_params$feature_raster_files = paste0(global_params$simulation_folder, 'MNES_data/species_layers_MNES/', list.files(path = paste0(global_params$simulation_folder, '/MNES_data/species_layers_MNES/'), 
-                                                                                                         all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
-                                                                                                        include.dirs = FALSE, no.. = FALSE, pattern = '.tif'))
+                                                                                                                            all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
+                                                                                                                            include.dirs = FALSE, no.. = FALSE, pattern = '.tif'))
   
-  global_params$use_simulated_data = FALSE
+  
+  global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'cad_rst_exprt.tif')
+  
+  global_params$condition_class_raster_files = vector() 
+  
+#   paste0(global_params$simulation_folder, 'simulation_inputs/', 
+#                                                       (list.files(path = paste0(global_params$simulation_folder, 'simulation_inputs/'),
+#                                                                   pattern = 'condition_class_raster_', all.files = FALSE, 
+#                                                                   full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
+#                                                                   include.dirs = FALSE, no.. = FALSE)))
+  
   
   global_params$save_output_raster = TRUE
   
@@ -23,8 +33,22 @@ initialise_user_global_params <- function(){
   # Create an animation of the outputs
   global_params$write_movie = FALSE
   
+  global_params$build_simulated_data = FALSE
+  
+  global_params$overwrite_site_characteristics = FALSE
+  
+  # Create an animation of the outputs
+  global_params$write_movie = FALSE
+  
   global_params$save_simulation_outputs = TRUE
   
+  global_params$overwrite_dev_probability_list = FALSE
+  global_params$overwrite_offset_probability_list = FALSE
+  
+  global_params$overwrite_management_dynamics = TRUE
+  global_params$overwrite_feature_dynamics = TRUE
+  global_params$overwrite_condition_classes = TRUE
+  global_params$overwrite_site_features = TRUE
   return(global_params)
 }
 
@@ -62,16 +86,18 @@ create_dynamics_set <- function(logistic_params_set, condition_class_bounds, tim
 
 initialise_user_simulation_params <- function(){ 
   
+  
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1:10
+  simulation_params$features_to_use_in_simulation = 1
   
-  simulation_params$transform_params = array(1, length(simulation_params$features_to_use_in_simulation))
   # The total number of layers to use in the offset calcuation (iterating from the start)
-  simulation_params$features_to_use_in_offset_calc = 1:10
+  simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
   
-  simulation_params$features_to_use_in_offset_intervention = 1:10
+  simulation_params$features_to_use_in_offset_intervention = simulation_params$features_to_use_in_simulation
+  
+  simulation_params$transform_params = rep(1, length(simulation_params$features_to_use_in_simulation))
   
   simulation_params$use_offset_metric = TRUE
   
@@ -85,7 +111,7 @@ initialise_user_simulation_params <- function(){
   simulation_params$limit_offset_restoration = TRUE
   
   # The probability per parcel of it being unregulatedly cleared, every parcel gets set to this number - set to zero to turn off
-  simulation_params$unregulated_loss_prob = 0.01
+  simulation_params$unregulated_loss_prob = 0.001
   
   # Exclude parcels with less than this number of pixels.
   simulation_params$site_screen_size = 5
@@ -94,10 +120,10 @@ initialise_user_simulation_params <- function(){
   
   # when the interventions are set to take place, in this case force to occur once per year
   simulation_params$intervention_vec = build_stochastic_intervention(time_steps = simulation_params$time_steps, 
-                                                                     intervention_start = 1, 
-                                                                     intervention_end = simulation_params$time_steps, 
-                                                                     intervention_num = simulation_params$intervention_num, 
-                                                                     sd = 1)
+                                                                            intervention_start = 1, 
+                                                                            intervention_end = simulation_params$time_steps, 
+                                                                            intervention_num = simulation_params$intervention_num, 
+                                                                            sd = 1)
   
   #   c('net_gains', 'restoration_gains', 'avoided_condition_decline', 'avoided_loss',
   #     'protected_condition', 'current_condition', 'restored_condition')
@@ -151,7 +177,7 @@ initialise_user_simulation_params <- function(){
 
 user_transform_function <- function(pool_vals, transform_params){
   scaled_scores <- lapply(seq_along(pool_vals), function(i) transform_params[i]/sum(transform_params)*100.68*(1 - exp(-5*( pool_vals[[i]]/transform_params[i] )^2.5) ))
-  BAM_score <- sqrt(Reduce('+', scaled_scores[1:5]) * Reduce('+', scaled_scores[1:5]))
+  BAM_score <- sqrt(Reduce('+', scaled_scores))
   return(BAM_score)
 }
 
@@ -180,7 +206,7 @@ initialise_user_feature_params <- function(){
   feature_params$management_update_dynamics_by_differential = TRUE
   feature_params$background_update_dynamics_by_differential = TRUE
   
-  feature_params$perform_management_dynamics_time_shift = FALSE
+  feature_params$perform_management_dynamics_time_shift = TRUE
   feature_params$perform_background_dynamics_time_shift = FALSE
   
   feature_params$update_offset_dynamics_by_time_shift = TRUE
@@ -190,17 +216,17 @@ initialise_user_feature_params <- function(){
   # Sample the background dynamics from a uniform distribution to they vary per site and per feature
   feature_params$sample_background_dynamics = TRUE
   
-  feature_params$simulated_time_vec = 0:80
   
-  feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), 5)
+  feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), 70)
   
   mean_decline_rate = -0.02
   mean_restoration_rate = 0.04
+  
+  background_logistic_params_set = rep(list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate)))), 70)
+  
+  management_logistic_params_set = rep(list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06)))), 70)
 
-  background_logistic_params_set = rep(list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate)))),5)
-  
-  management_logistic_params_set = rep(list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06)))), 5)
-  
+
   feature_params$simulated_time_vec = 0:200
   
   feature_params$background_dynamics_bounds <- create_dynamics_set(background_logistic_params_set, 
@@ -242,21 +268,21 @@ initialise_user_output_params <- function(){
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
-  output_params$plot_offset_metric = TRUE
+  output_params$plot_offset_metric = FALSE
   
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
   output_params$output_plot = TRUE # can be set to 'plot' or 'file'
   output_params$output_csv_file = FALSE # can be set to 'plot' or 'file'
   output_params$plot_subset_type = 'all' #c('offset_action_type') # 'offset_calc_type', 'offset_action_type', offset_time_horizon'
   output_params$plot_subset_param = 'all' #c('maintain') # 'net_gains', 'restore', 15
-  output_params$features_to_plot = 1:10
+  output_params$features_to_plot = 1
   output_params$print_dev_offset_sites = FALSE
-  output_params$sets_to_plot = 10
+  output_params$sets_to_plot = 1
   output_params$site_outcome_plot_lims_set = list(c(0, 1e2))
   output_params$program_outcome_plot_lims_set = list(c(0e6, 1e4))
   output_params$landscape_outcome_plot_lims_set = list(c(0, 2e4))
   output_params$nx = 3 
-  output_params$ny = 4
+  output_params$ny = 1
   output_params$site_impact_plot_lims_set = list(c(-1e2, 1e2), c(-1e2, 1e2), c(-1e2, 1e2), c(-1e3, 1e3), c(-1e3, 1e3), c(-1e3, 1e3))
   output_params$program_impact_plot_lims_set = list(c(-1e4, 1e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4)) 
   output_params$landscape_impact_plot_lims_set = list(c(-1e4, 1e4), c(-1e4, 1e4), c(-1e4, 1e4), c(-1e5, 1e5), c(-1e5, 1e5), c(-1e5, 1e5))
