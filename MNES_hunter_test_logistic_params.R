@@ -19,26 +19,14 @@ initialise_user_global_params <- function(){
 #                                                                   full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
 #                                                                   include.dirs = FALSE, no.. = FALSE)))
   
-  
-  global_params$save_output_raster = TRUE
-  
   global_params$number_of_cores = 'all'
   
   # The number of realizations to run
   global_params$realisation_num = 1
   
-  # Makes a single pdf at the end of the simulation showing the locatons of all offsets
-  global_params$write_offset_layer = FALSE
-  
-  # Create an animation of the outputs
-  global_params$write_movie = FALSE
-  
   global_params$build_simulated_data = FALSE
   
   global_params$overwrite_site_characteristics = FALSE
-  
-  # Create an animation of the outputs
-  global_params$write_movie = FALSE
   
   global_params$save_simulation_outputs = TRUE
   
@@ -90,7 +78,7 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1:5
+  simulation_params$features_to_use_in_simulation = 1
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
   simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
@@ -217,14 +205,14 @@ initialise_user_feature_params <- function(){
   feature_params$sample_background_dynamics = TRUE
   
   
-  feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), 70)
+  feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), 10)
   
   mean_decline_rate = -0.02
   mean_restoration_rate = 0.04
   
-  background_logistic_params_set = rep(list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate)))), 70)
+  background_logistic_params_set = rep(list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate)))), 10)
   
-  management_logistic_params_set = rep(list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06)))), 70)
+  management_logistic_params_set = rep(list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06)))), 10)
 
 
   feature_params$simulated_time_vec = 0:200
@@ -260,6 +248,9 @@ setup_sub_plots <- function(nx, ny, x_space, y_space){
 
 initialise_user_output_params <- function(){
   output_params = list()
+  output_params$save_output_raster = TRUE
+  output_params$mov_file_type = 'png'
+  output_params$output_movie = TRUE
   output_params$output_plot_folder = vector()
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
@@ -268,7 +259,7 @@ initialise_user_output_params <- function(){
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
-  output_params$plot_offset_metric = FALSE
+  output_params$plot_offset_metric = TRUE
   
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
   output_params$output_plot = TRUE # can be set to 'plot' or 'file'
@@ -282,7 +273,7 @@ initialise_user_output_params <- function(){
   output_params$program_outcome_plot_lims_set = list(c(0e6, 1e4))
   output_params$landscape_outcome_plot_lims_set = list(c(0, 2e4))
   output_params$nx = 3 
-  output_params$ny = 1
+  output_params$ny = 6
   output_params$site_impact_plot_lims_set = list(c(-1e2, 1e2), c(-1e2, 1e2), c(-1e2, 1e2), c(-1e3, 1e3), c(-1e3, 1e3), c(-1e3, 1e3))
   output_params$program_impact_plot_lims_set = list(c(-1e4, 1e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4)) 
   output_params$landscape_impact_plot_lims_set = list(c(-1e4, 1e4), c(-1e4, 1e4), c(-1e4, 1e4), c(-1e5, 1e5), c(-1e5, 1e5), c(-1e5, 1e5))
