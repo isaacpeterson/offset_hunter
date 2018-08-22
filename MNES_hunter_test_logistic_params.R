@@ -78,7 +78,7 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1
+  simulation_params$features_to_use_in_simulation = 1:5
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
   simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
@@ -171,7 +171,7 @@ user_transform_function <- function(pool_vals, transform_params){
 
 
 
-initialise_user_feature_params <- function(){
+initialise_user_feature_params <- function(features_to_use_in_simulation){
   
   feature_params = list()
   
@@ -205,14 +205,14 @@ initialise_user_feature_params <- function(){
   feature_params$sample_background_dynamics = TRUE
   
   
-  feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), 10)
+  feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), length(features_to_use_in_simulation))
   
   mean_decline_rate = -0.02
   mean_restoration_rate = 0.04
   
-  background_logistic_params_set = rep(list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate)))), 10)
+  background_logistic_params_set = rep(list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate)))), length(features_to_use_in_simulation))
   
-  management_logistic_params_set = rep(list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06)))), 10)
+  management_logistic_params_set = rep(list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06)))), length(features_to_use_in_simulation))
 
 
   feature_params$simulated_time_vec = 0:200
