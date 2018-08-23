@@ -20,55 +20,21 @@ initialise_ecology_params <- function(){
   
 }
 
-initialise_weighted_probability <- function(weight_layer, land_parcels){
+build_probability_list <- function(weight_layer, land_parcels, site_indexes_to_exclude){
   
-  inds_to_use = !is.na(weight_layer)
-  dev_weights = lapply(seq_along(land_parcels), function(i) mean(weight_layer[land_parcels[[i]]]))
-  na_vals = is.na(unlist(dev_weights))
-  dev_weights[na_vals] = 0
-  scale_factor = sum(unlist(dev_weights))
-  dev_weights = lapply(seq_along(dev_weights), function(i) dev_weights[[i]]/scale_factor)
+  intervention_weights = rep(list(0), length(land_parcels))
+  sites_to_use = setdiff(seq_along(land_parcels), site_indexes_to_exclude)
+  intervention_weights[sites_to_use] = lapply(sites_to_use, function(i) mean(weight_layer[land_parcels[[i]]]))
+  scale_factor = sum(unlist(intervention_weights))
+  intervention_weights = lapply(seq_along(intervention_weights), function(i) intervention_weights[[i]]/scale_factor)
   
-  return(dev_weights)
+  return(intervention_weights)
 }
 
 
-load_mining_raster <- function(parcel_mask, current_data_folder){
-  current_filenames <- list.files(path = current_data_folder, pattern = '.tif', all.files = FALSE, 
-                                  full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
-                                  include.dirs = FALSE, no.. = FALSE)
-  mining_raster = load_rasters(current_data_folder, current_filenames, layer_num = 1)
-  mining_raster <- crop(mining_raster, extent(parcel_mask))
-  mining_raster = as.matrix(mining_raster)
-  return(mining_raster)
-}
-
-load_hunter_LGA <- function(parcel_mask, data_folder){
-  
-  LGA_shp <- readOGR(dsn = paste0(data_folder, 'LGA'), layer = "5_LGAs_StudyArea")
-  
-  LGA_raster <- shp_to_raster(shp = LGA_shp, raster_dims = dim(parcel_mask))
-  
-  extent(LGA_raster) = extent(parcel_mask)
-  
-  # define projections
-  GDA.D <- CRS("+proj=longlat +ellps=GRS80 +towgs84=0.0,0.0,0.0,0.0,0.0,0.0,0.0 +no_defs ")
-  GDA94.56 <- CRS("+proj=utm +zone=56 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
-  
-  parcels_shp <- readOGR(dsn = paste0(data_folder, 'LH_property_2015'),  layer = "property")
-  parcels_shp_transform <- spTransform(parcels_shp, GDA94.56) # project to correct CRS
-  parcels_shp_cropped <- crop(parcels_shp_transform, extent(parcel_mask))
-  parcels_raster = shp_to_raster(shp = parcels_shp_cropped, raster_dims = dim(parcel_mask))
-  
-  
-  parcel_array = as.matrix(parcels_raster)
-  parcel_array[is.na(parcel_array)] = 0
-  
-  return(parcel_array)
-}
 
 
-load_parcel_characteristics = TRUE
+load_site_characteristics = TRUE
 use_z_layer = TRUE
 sample_decline_rate = FALSE
 
@@ -78,57 +44,70 @@ decline_rate_std = 0.005
 
 ecology_params <- initialise_ecology_params()
 data_folder = paste0(path.expand('~'), '/offset_data/hunter/MNES_data/')
-parcel_mask = raster(paste0(data_folder, 'LH_property_2015/LH.clipping.mask_v2.tif'))
+cadastre_msk = raster(paste0(data_folder, 'LH_property_2015/LH.clipping.mask_v2.tif'))
 
 simulation_inputs_folder = paste0(path.expand('~'), '/offset_data/hunter/simulation_inputs/')
 
-protected_areas_raster = load_rasters(paste0(data_folder),
-                                      'ProtectedAreas_v4.tif', 
-                                      layer_num = 'all')
+protected_areas_raster = load_rasters(paste0(data_folder,'ProtectedAreas_v4.tif'), 'all')
 
-protected_areas_mask = raster_to_array(protected_areas_raster)
+protected_areas_msk = raster_to_array(protected_areas_raster)
 
 current_filenames <- list.files(path = paste0(data_folder, 'species_layers_MNES/'), pattern = '.tif', all.files = FALSE, 
                                 full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
                                 include.dirs = FALSE, no.. = FALSE)
 
-species_raster = load_rasters(paste0(data_folder, 'species_layers_MNES/'), current_filenames, 
-                              layer_num = 'all')
+species_raster = load_rasters(paste0(data_folder, 'species_layers_MNES/', current_filenames), 'all')
 
 if (use_z_layer == TRUE){
   current_filenames <- list.files(path = paste0(data_folder, 'z_layer/'), pattern = '.tif', all.files = FALSE, 
                                   full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
                                   include.dirs = FALSE, no.. = FALSE)
-  z_raster = load_rasters(paste0(data_folder, 'z_layer/'), current_filenames, layer_num = 1)
+  z_raster = load_rasters(paste0(data_folder, 'z_layer/', current_filenames), 'all')
   species_raster = stack(z_raster, species_raster)
 }
 
 
-objects_to_save = list()
+
 
 if (load_site_characteristics == TRUE){
   site_characteristics = readRDS(paste0(simulation_inputs_folder, 'site_characteristics.rds'))
   
 } else { 
-  LGA_array <- load_hunter_LGA(parcel_mask, data_folder)
-  objects_to_save$site_characteristics = LGA_array
-  site_characteristics <- LGA_to_parcel_list(LGA_array)
-  objects_to_save$parcels = parcels
+  LGA_shp <- readOGR(dsn = paste0(data_folder, 'LGA'), layer = "5_LGAs_StudyArea")
+  LGA_raster <- shp_to_raster(shp = LGA_shp, raster_dims = dim(cadastre_msk))
+  extent(LGA_raster) = extent(cadastre_msk)
+  
+  # define projections
+  GDA.D <- CRS("+proj=longlat +ellps=GRS80 +towgs84=0.0,0.0,0.0,0.0,0.0,0.0,0.0 +no_defs ")
+  GDA94.56 <- CRS("+proj=utm +zone=56 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
+  
+  site_ID_shp <- readOGR(dsn = paste0(data_folder, 'LH_property_2015'),  layer = "property")
+  site_ID_shp_transform <- spTransform(parcels_shp, GDA94.56) # project to correct CRS
+  site_ID_shp_cropped <- crop(parcels_shp_transform, extent(cadastre_msk))
+  site_ID_raster = shp_to_raster(shp = parcels_shp_cropped, raster_dims = dim(cadastre_msk))
+  extent(site_ID_raster) = extent(cadastre_msk)
+  writeRaster(site_ID_raster, paste0(simulation_inputs_folder, 'hunter_site_IDs.tif'), overwrite = TRUE)
+  site_characteristics = build_site_characteristics(raster_to_array(site_ID_raster))
 } 
 
-landscape_ecology = lapply(seq(dim(species_raster)[3]), function(i) raster_to_array(subset(species_raster, i)))
-objects_to_save$landscape_ecology = scale_ecology(landscape_ecology, ecology_params$max_eco_val, dim(landscape_ecology[[1]]))
-objects_to_save$parcel_ecology <- split_ecology(objects_to_save$landscape_ecology, parcels$land_parcels)
 
-mining_raster = load_mining_raster(parcel_mask, current_data_folder = paste0(data_folder, 'mining_scenarios/'))
-objects_to_save$mining_mask = raster_to_array(mining_raster) & (raster_to_array(parcel_mask) > 0)
+######## NOTE: GET HEINI TO CHECK ON MINING LAYER ORIENTATION AS IT LOOKS ROTATED BY 90 DEG.
 
-objects_to_save$dev_weights <- initialise_weighted_probability(objects_to_save$mining_mask, 
-                                               land_parcels = parcels$land_parcels)
+mining_layer_filenames <- list.files(path = paste0(data_folder, 'mining_scenarios/'), pattern = '.tif', all.files = FALSE, 
+                                full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
+                                include.dirs = FALSE, no.. = FALSE)
+mining_layer = load_rasters(paste0(data_folder, 'mining_scenarios/', mining_layer_filenames), 'all')
+mining_layer <- crop(mining_layer, extent(cadastre_msk))
+mining_layer = raster_to_array(mining_layer)
 
-objects_to_save$offset_mask <- (protected_areas_mask == 3) & !(objects_to_save$mining_mask)
-objects_to_save$offset_weights <- initialise_weighted_probability(objects_to_save$offset_mask, 
-                                                  parcels$land_parcels)
+mining_msk = mining_layer & (raster_to_array(cadastre_msk) > 0)
 
+objects_to_save = list()
+objects_to_save$dev_probability_list <- build_probability_list(mining_msk, site_characteristics$land_parcels, site_indexes_to_exclude = 1)
+
+offset_msk <- (protected_areas_msk == 3) & !(mining_layer > 0)
+objects_to_save$offset_probability_list <- build_probability_list(offset_msk, site_characteristics$land_parcels, site_indexes_to_exclude = 1)
+
+objects_to_save$unregulated_probability_list <- build_probability_list(raster_to_array(cadastre_msk), site_characteristics$land_parcels, site_indexes_to_exclude = 1)
 
 save_simulation_inputs(objects_to_save, simulation_inputs_folder)

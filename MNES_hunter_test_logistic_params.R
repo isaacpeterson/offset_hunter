@@ -9,7 +9,7 @@ initialise_user_global_params <- function(){
                                                                                                                             include.dirs = FALSE, no.. = FALSE, pattern = '.tif'))
   
   
-  global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'cad_rst_exprt.tif')
+  global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'hunter_site_IDs.tif')
   
   global_params$condition_class_raster_files = vector() 
   
@@ -32,6 +32,7 @@ initialise_user_global_params <- function(){
   
   global_params$overwrite_dev_probability_list = FALSE
   global_params$overwrite_offset_probability_list = FALSE
+  global_params$overwrite_unregulated_probability_list = FALSE
   
   global_params$overwrite_management_dynamics = TRUE
   global_params$overwrite_feature_dynamics = TRUE
@@ -78,7 +79,7 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1:5
+  simulation_params$features_to_use_in_simulation = 1
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
   simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
@@ -102,9 +103,11 @@ initialise_user_simulation_params <- function(){
   simulation_params$unregulated_loss_prob = 0.001
   
   # Exclude parcels with less than this number of pixels.
-  simulation_params$site_screen_size = 5
+  simulation_params$min_site_screen_size = 5
+  # ignore parcels with size below this number of elements 
+  simulation_params$max_site_screen_size_quantile = 0.99
   
-  simulation_params$intervention_num = 500
+  simulation_params$intervention_num = 1400
   
   # when the interventions are set to take place, in this case force to occur once per year
   simulation_params$intervention_vec = build_stochastic_intervention(time_steps = simulation_params$time_steps, 
