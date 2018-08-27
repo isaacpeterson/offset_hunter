@@ -11,14 +11,6 @@ initialise_user_global_params <- function(){
   
   global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'hunter_site_IDs.tif')
   
-  global_params$condition_class_raster_files = vector() 
-  
-#   paste0(global_params$simulation_folder, 'simulation_inputs/', 
-#                                                       (list.files(path = paste0(global_params$simulation_folder, 'simulation_inputs/'),
-#                                                                   pattern = 'condition_class_raster_', all.files = FALSE, 
-#                                                                   full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
-#                                                                   include.dirs = FALSE, no.. = FALSE)))
-  
   global_params$number_of_cores = 'all'
   
   # The number of realizations to run
@@ -79,7 +71,7 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1
+  simulation_params$features_to_use_in_simulation = 1:3
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
   simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
@@ -263,13 +255,13 @@ initialise_user_output_params <- function(){
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
   output_params$plot_offset_metric = TRUE
-  
+  output_params$output_mov = TRUE
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
   output_params$output_plot = TRUE # can be set to 'plot' or 'file'
   output_params$output_csv_file = FALSE # can be set to 'plot' or 'file'
   output_params$plot_subset_type = 'all' #c('offset_action_type') # 'offset_calc_type', 'offset_action_type', offset_time_horizon'
   output_params$plot_subset_param = 'all' #c('maintain') # 'net_gains', 'restore', 15
-  output_params$features_to_plot = 1
+  output_params$features_to_output = 1:3
   output_params$print_dev_offset_sites = FALSE
   output_params$sets_to_plot = 1
   output_params$site_outcome_plot_lims_set = list(c(0, 1e2))
