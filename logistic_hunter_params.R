@@ -4,10 +4,10 @@ initialise_user_global_params <- function(){
   
   global_params$simulation_folder = paste0(path.expand('~'), '/offset_data/hunter/')
   
-  global_params$feature_raster_files = paste0(global_params$simulation_folder, 'MNES_data/species_layers_MNES/', list.files(path = paste0(global_params$simulation_folder, '/MNES_data/species_layers_MNES/'), 
-                                                                                                                            all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
-                                                                                                                            include.dirs = FALSE, no.. = FALSE, pattern = '.tif'))
-  
+  global_params$feature_raster_files = paste0(global_params$simulation_folder, 'MNES_data/species_layers_MNES/', 
+                                              list.files(path = paste0(global_params$simulation_folder, '/MNES_data/species_layers_MNES/'), 
+                                                         all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
+                                                         include.dirs = FALSE, no.. = FALSE, pattern = '.tif'))
   
   global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'hunter_site_IDs.tif')
   
@@ -103,10 +103,10 @@ initialise_user_simulation_params <- function(){
   
   # when the interventions are set to take place, in this case force to occur once per year
   simulation_params$intervention_vec = build_stochastic_intervention(time_steps = simulation_params$time_steps, 
-                                                                            intervention_start = 1, 
-                                                                            intervention_end = simulation_params$time_steps, 
-                                                                            intervention_num = simulation_params$intervention_num, 
-                                                                            sd = 1)
+                                                                     intervention_start = 1, 
+                                                                     intervention_end = simulation_params$time_steps, 
+                                                                     intervention_num = simulation_params$intervention_num, 
+                                                                     sd = 1)
   
   #   c('net_gains', 'restoration_gains', 'avoided_condition_decline', 'avoided_loss',
   #     'protected_condition', 'current_condition', 'restored_condition')
@@ -208,18 +208,18 @@ initialise_user_feature_params <- function(features_to_use_in_simulation){
   background_logistic_params_set = rep(list(list(list(c(0, mean_decline_rate), c(0.5, mean_decline_rate), c(1, mean_decline_rate)))), length(features_to_use_in_simulation))
   
   management_logistic_params_set = rep(list(list(list(c(0.01, 0.04), c(0.01, 0.05), c(0.01, 0.06)))), length(features_to_use_in_simulation))
-
-
+  
+  
   feature_params$simulated_time_vec = 0:200
   
   feature_params$background_dynamics_bounds <- create_dynamics_set(background_logistic_params_set, 
-                                                    feature_params$condition_class_bounds,
-                                                    feature_params$simulated_time_vec)
+                                                                   feature_params$condition_class_bounds,
+                                                                   feature_params$simulated_time_vec)
   
   
   feature_params$management_dynamics_bounds <- create_dynamics_set(management_logistic_params_set, 
-                                                    feature_params$condition_class_bounds,
-                                                    feature_params$simulated_time_vec)
+                                                                   feature_params$condition_class_bounds,
+                                                                   feature_params$simulated_time_vec)
   
   feature_params$initial_condition_class_bounds = lapply(seq_along(feature_params$background_dynamics_bounds), 
                                                          function(i) lapply(seq_along(feature_params$background_dynamics_bounds[[i]]), 
@@ -243,19 +243,18 @@ setup_sub_plots <- function(nx, ny, x_space, y_space){
 
 initialise_user_output_params <- function(){
   output_params = list()
-  output_params$save_output_raster = TRUE
-  output_params$mov_file_type = 'png'
-  output_params$output_movie = TRUE
-  output_params$output_plot_folder = vector()
+  output_params$output_folder = vector()
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
-  output_params$write_pdf = FALSE
-  
+  output_params$write_pdf = TRUE
+  output_params$output_raster_layers = TRUE
+  output_params$output_image_file_type = 'png'
+  output_params$output_image_layers = TRUE
+  output_params$output_plot = TRUE
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
   output_params$plot_offset_metric = TRUE
-  output_params$output_mov = TRUE
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
   output_params$output_plot = TRUE # can be set to 'plot' or 'file'
   output_params$output_csv_file = FALSE # can be set to 'plot' or 'file'

@@ -1,5 +1,5 @@
 library(offsetsim)
-source('MNES_hunter_test_logistic_params.R' )
+source('logistic_hunter_params.R' )
 
 user_simulation_params = initialise_user_simulation_params()
 user_global_params = initialise_user_global_params()
