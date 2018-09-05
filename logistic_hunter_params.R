@@ -77,21 +77,23 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1
+  simulation_params$features_to_use_in_simulation = 1:3
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
   simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
   
   simulation_params$features_to_use_in_offset_intervention = simulation_params$features_to_use_in_simulation
   
+  #series of parameters that are passed to user_tranfrom_function i.e how the metric is calculated
+  
   simulation_params$transform_params = rep(1, length(simulation_params$features_to_use_in_simulation))
   
   simulation_params$use_offset_metric = TRUE
   
+  #how many iterations the simulation runs for
   simulation_params$time_steps = 50
   
-  # The maximum number of parcels can be selected to offset a single development
-  
+  # The maximum number of sites can be selected to offset a single development
   simulation_params$max_offset_parcel_num = 10
   
   # Stops the offset from delivering any further gains once it has acheived the gains required
@@ -115,11 +117,10 @@ initialise_user_simulation_params <- function(){
                                                                      intervention_num = simulation_params$intervention_num, 
                                                                      sd = 1)
   
-
-  
   #   c('net_gains', 'restoration_gains', 'avoided_condition_decline', 'avoided_loss',
   #     'protected_condition', 'current_condition', 'restored_condition')
   
+  # how gains are claculated/what happens when a site is offset
   simulation_params$offset_action_params = list(c('net_gains', 'restore'))
   
   # This is the equivalent of offset_calc_type for the dev parcel. Options
@@ -150,6 +151,7 @@ initialise_user_simulation_params <- function(){
 
 
 user_transform_function <- function(pool_vals, transform_params){
+  #pool_vals is proivided as a nested list
   scaled_scores <- lapply(seq_along(pool_vals), function(i) transform_params[i]/sum(transform_params)*100.68*(1 - exp(-5*( pool_vals[[i]]/transform_params[i] )^2.5) ))
   BAM_score <- sqrt(Reduce('+', scaled_scores))
   return(BAM_score)
@@ -168,15 +170,15 @@ initialise_user_feature_params <- function(features_to_use_in_simulation){
   feature_params$unique_site_modes = TRUE
   
   feature_params$site_sample_type = 'trunc_norm'
-  feature_params$initial_site_sd = 0.05
-  
-  feature_params$initial_site_mean_sd = 0.2
+
   feature_params$dynamics_sample_type = 'by_initial_value' #'by_initial_value' 
   # Sample the restoration rates from a uniform distribution to they vary per parcel and per feature
   feature_params$management_dynamics_sample_type = 'by_distribution'
   
   feature_params$project_by_mean = TRUE
   
+  
+  ########## DONT EDIT! #################
   feature_params$management_update_dynamics_by_differential = TRUE
   feature_params$background_update_dynamics_by_differential = TRUE
   
@@ -189,6 +191,8 @@ initialise_user_feature_params <- function(features_to_use_in_simulation){
   
   # Sample the background dynamics from a uniform distribution to they vary per site and per feature
   feature_params$sample_background_dynamics = TRUE
+  ###########################
+  
   
   
   feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), length(features_to_use_in_simulation))
@@ -234,10 +238,11 @@ setup_sub_plots <- function(nx, ny, x_space, y_space){
 
 initialise_user_output_params <- function(){
   output_params = list()
+  output_params$features_to_output = 1
   output_params$output_folder = vector()
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
-  output_params$output_type = 'plot'
+  output_params$output_type = 'png' #'plot', 'png', 'raster'
   output_params$write_pdf = TRUE
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
@@ -246,7 +251,6 @@ initialise_user_output_params <- function(){
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
   output_params$plot_subset_type = 'all' #c('offset_action_type') # 'offset_calc_type', 'offset_action_type', offset_time_horizon'
   output_params$plot_subset_param = 'all' #c('maintain') # 'net_gains', 'restore', 15
-  output_params$features_to_output = 1:3
   output_params$print_dev_offset_sites = FALSE
   output_params$sets_to_plot = 1
   output_params$nx = 3 

@@ -6,7 +6,7 @@ user_global_params = initialise_user_global_params()
 user_feature_params = initialise_user_feature_params(user_simulation_params$features_to_use_in_simulation)
 user_output_params <- initialise_user_output_params()
 
-osim.run(user_global_params, user_simulation_params, user_feature_params, loglevel = 'TRACE')
+#osim.run(user_global_params, user_simulation_params, user_feature_params, loglevel = 'TRACE')
 
 simulation_folder = find_current_run_folder(base_folder = '~/offset_data/hunter/', file_placeholder_width = 3)
 osim.output(user_output_params, simulation_folder, loglevel = 'TRACE')
