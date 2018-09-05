@@ -249,15 +249,14 @@ initialise_user_output_params <- function(){
   output_params$features_to_output = 1:3
   output_params$print_dev_offset_sites = FALSE
   output_params$sets_to_plot = 1
-  output_params$site_outcome_plot_lims_set = list(c(0, 1e2))
-  output_params$program_outcome_plot_lims_set = list(c(0e6, 1e4))
-  output_params$landscape_outcome_plot_lims_set = list(c(0, 2e4))
   output_params$nx = 3 
   output_params$ny = 6
   output_params$site_impact_plot_lims_set = list(rep(list(c(-1e2, 1e2)), 3))
   output_params$program_impact_plot_lims_set = list(rep(list(c(-1e3, 1e3)), 3))
   output_params$landscape_impact_plot_lims_set = list(rep(list(c(-1e4, 1e4)), 3))
-  
+  output_params$site_outcome_plot_lims_set = list(rep(list(c(0, 1e2)), 3))
+  output_params$program_outcome_plot_lims_set = list(rep(list(c(0, 1e3)), 3))
+  output_params$landscape_outcome_plot_lims_set = list(rep(list(c(0, 1e4)), 3))
   return(output_params)
 }
 
