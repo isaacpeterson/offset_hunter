@@ -77,7 +77,7 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1:3
+  simulation_params$features_to_use_in_simulation = 1
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
   simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
