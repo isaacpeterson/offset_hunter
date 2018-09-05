@@ -237,7 +237,8 @@ initialise_user_output_params <- function(){
   output_params$output_folder = vector()
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
-  output_params$output_type = 'raster'
+  output_params$output_type = 'plot'
+  output_params$write_pdf = TRUE
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
@@ -253,9 +254,9 @@ initialise_user_output_params <- function(){
   output_params$landscape_outcome_plot_lims_set = list(c(0, 2e4))
   output_params$nx = 3 
   output_params$ny = 6
-  output_params$site_impact_plot_lims_set = list(c(-1e2, 1e2), c(-1e2, 1e2), c(-1e2, 1e2), c(-1e3, 1e3), c(-1e3, 1e3), c(-1e3, 1e3))
-  output_params$program_impact_plot_lims_set = list(c(-1e4, 1e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4), c(-2e4, 2e4)) 
-  output_params$landscape_impact_plot_lims_set = list(c(-1e4, 1e4), c(-1e4, 1e4), c(-1e4, 1e4), c(-1e5, 1e5), c(-1e5, 1e5), c(-1e5, 1e5))
+  output_params$site_impact_plot_lims_set = list(rep(list(c(-1e2, 1e2)), 3))
+  output_params$program_impact_plot_lims_set = list(rep(list(c(-1e3, 1e3)), 3))
+  output_params$landscape_impact_plot_lims_set = list(rep(list(c(-1e4, 1e4)), 3))
   
   return(output_params)
 }
