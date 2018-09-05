@@ -16,7 +16,7 @@ initialise_user_global_params <- function(){
   # The number of realizations to run
   global_params$realisation_num = 1
   
-  global_params$build_simulated_data = FALSE
+  global_params$run_from_simulated_data = FALSE
   
   global_params$overwrite_site_characteristics = FALSE
   
