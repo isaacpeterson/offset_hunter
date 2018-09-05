@@ -4,11 +4,13 @@ initialise_user_global_params <- function(){
   
   global_params$simulation_folder = paste0(path.expand('~'), '/offset_data/hunter/')
   
+  # identify what feature rasters to work with
   global_params$feature_raster_files = paste0(global_params$simulation_folder, 'MNES_data/species_layers_MNES/', 
                                               list.files(path = paste0(global_params$simulation_folder, '/MNES_data/species_layers_MNES/'), 
                                                          all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
                                                          include.dirs = FALSE, no.. = FALSE, pattern = '.tif'))
   
+  # layer containing data on site ID's - this will not change
   global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'hunter_site_IDs.tif')
   
   global_params$number_of_cores = 'all'
@@ -22,9 +24,14 @@ initialise_user_global_params <- function(){
   
   global_params$save_simulation_outputs = TRUE
   
+  # params to govern where development/offsets/unregulated loss occurs - 
+  # need to supply these as files to simulatio - otherwise the default is no separation
   global_params$overwrite_dev_probability_list = FALSE
   global_params$overwrite_offset_probability_list = FALSE
   global_params$overwrite_unregulated_probability_list = FALSE
+  
+  
+  # params to govern whether dynamics are overwritten each time (TRUE) or not (FALSE)
   
   global_params$overwrite_management_dynamics = TRUE
   global_params$overwrite_feature_dynamics = TRUE
@@ -35,7 +42,6 @@ initialise_user_global_params <- function(){
 
 
 # define feature_layers dynamics by logistic curve
-
 logistic_projection <- function(parcel_vals, min_eco_val, max_eco_val, current_dec_rate, time_vec){
   
   t_sh = -1/current_dec_rate * log( ((parcel_vals - min_eco_val)/(max_eco_val - parcel_vals)))
@@ -99,6 +105,7 @@ initialise_user_simulation_params <- function(){
   # ignore parcels with size below this number of elements 
   simulation_params$max_site_screen_size_quantile = 0.99
   
+  #how many development/offset actions take place
   simulation_params$intervention_num = 1400
   
   # when the interventions are set to take place, in this case force to occur once per year
@@ -107,6 +114,8 @@ initialise_user_simulation_params <- function(){
                                                                      intervention_end = simulation_params$time_steps, 
                                                                      intervention_num = simulation_params$intervention_num, 
                                                                      sd = 1)
+  
+
   
   #   c('net_gains', 'restoration_gains', 'avoided_condition_decline', 'avoided_loss',
   #     'protected_condition', 'current_condition', 'restored_condition')
@@ -132,25 +141,7 @@ initialise_user_simulation_params <- function(){
   
   # The time horizon in which the offset gains need to equal the devlopment impact
   simulation_params$offset_time_horizon = 30
-  
-  # Include future legal developments in calculating contribution of avoided
-  # losses to the impact of the offset. This increases the impact of the
-  # offset (due to future losses that are avoided)
-  simulation_params$include_potential_developments_in_offset_calc = list(FALSE)
-  
-  # Include future unregulated developments in calculating contribution of avoided losses
-  # to the impact of the offset. This increases the impact of the
-  # offset (due to future losses that are avoided)
-  simulation_params$include_unregulated_loss_in_offset_calc = list(FALSE)
-  
-  # Include unregulated clearing in the calculating the contribution of avoided
-  # losses to the impact of the development. 
-  simulation_params$include_unregulated_loss_in_dev_calc = simulation_params$include_unregulated_loss_in_offset_calc
-  
-  simulation_params$dev_counterfactual_adjustment = 'as_offset'
-  # The development impacts is multiplied by this factor (irrespective of how
-  # they were caluclated) and the offset impact then needs to match this
-  # multiplied development impact
+
   simulation_params$offset_multiplier = 1
   
   return(simulation_params)
@@ -246,18 +237,12 @@ initialise_user_output_params <- function(){
   output_params$output_folder = vector()
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
-  output_params$write_pdf = TRUE
-  output_params$output_raster_layers = TRUE
-  output_params$output_image_file_type = 'png'
-  output_params$output_image_layers = TRUE
-  output_params$output_plot = TRUE
+  output_params$output_type = 'raster'
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
   output_params$plot_offset_metric = TRUE
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
-  output_params$output_plot = TRUE # can be set to 'plot' or 'file'
-  output_params$output_csv_file = FALSE # can be set to 'plot' or 'file'
   output_params$plot_subset_type = 'all' #c('offset_action_type') # 'offset_calc_type', 'offset_action_type', offset_time_horizon'
   output_params$plot_subset_param = 'all' #c('maintain') # 'net_gains', 'restore', 15
   output_params$features_to_output = 1:3
