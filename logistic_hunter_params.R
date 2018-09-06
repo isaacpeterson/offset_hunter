@@ -254,7 +254,7 @@ initialise_user_output_params <- function(){
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
   output_params$output_type = 'png' #'plot', 'png', 'raster'
-  output_params$map_vals = FALSE
+  output_params$map_vals = TRUE
   output_params$write_pdf = TRUE
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
