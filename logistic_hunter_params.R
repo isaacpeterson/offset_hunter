@@ -76,8 +76,10 @@ initialise_user_simulation_params <- function(){
   
   simulation_params = list()
   
+
+  
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1:3
+  simulation_params$features_to_use_in_simulation = 1
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
   simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
@@ -100,7 +102,7 @@ initialise_user_simulation_params <- function(){
   simulation_params$limit_offset_restoration = TRUE
   
   # The probability per parcel of it being unregulatedly cleared, every parcel gets set to this number - set to zero to turn off
-  simulation_params$unregulated_loss_prob = 0.001
+  simulation_params$unregulated_loss_prob = 0
   
   # Exclude parcels with less than this number of pixels.
   simulation_params$min_site_screen_size = 5
@@ -108,7 +110,7 @@ initialise_user_simulation_params <- function(){
   simulation_params$max_site_screen_size_quantile = 0.99
   
   #how many development/offset actions take place
-  simulation_params$intervention_num = 1400
+  simulation_params$intervention_num = 0
   
   # when the interventions are set to take place, in this case force to occur once per year
   simulation_params$intervention_vec = build_stochastic_intervention(time_steps = simulation_params$time_steps, 
@@ -144,6 +146,15 @@ initialise_user_simulation_params <- function(){
   simulation_params$offset_time_horizon = 30
 
   simulation_params$offset_multiplier = 1
+  
+  simulation_params$unregulated_loss_type = 'unregulated_stochastic_development'  # switch to allow unregulated development (i.e. without offsets)
+  
+  # when the interventions are set to take place, in this case force to occur once per year
+  simulation_params$unregulated_intervention_vec = build_stochastic_intervention(time_steps = simulation_params$time_steps, 
+                                                                                 intervention_start = 1, 
+                                                                                 intervention_end = simulation_params$time_steps, 
+                                                                                 intervention_num = 1000, 
+                                                                                 sd = 1)
   
   return(simulation_params)
   
@@ -243,6 +254,7 @@ initialise_user_output_params <- function(){
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
   output_params$output_type = 'png' #'plot', 'png', 'raster'
+  output_params$map_vals = FALSE
   output_params$write_pdf = TRUE
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
