@@ -177,8 +177,6 @@ initialise_user_feature_params <- function(features_to_use_in_simulation){
   feature_params$background_dynamics_type = 'site_scale'
   feature_params$management_dynamics_type = 'site_scale'
   feature_params$scale_features = TRUE
-  feature_params$unique_site_vals = TRUE
-  feature_params$unique_site_modes = TRUE
   
   feature_params$site_sample_type = 'trunc_norm'
 
