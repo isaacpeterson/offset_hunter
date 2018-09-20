@@ -16,7 +16,7 @@ initialise_user_global_params <- function(){
   global_params$number_of_cores = 'all'
   
   # The number of realizations to run
-  global_params$realisation_num = 1
+  global_params$realisation_num = 4
   
   global_params$run_from_simulated_data = FALSE
   
@@ -76,7 +76,10 @@ initialise_user_simulation_params <- function(){
   
   simulation_params = list()
   
-
+  # allow pass of credit to simulation - can be used to run developments without offsets by setting value to large
+  simulation_params$initial_credit = 0
+  #how many development/offset actions take place
+  simulation_params$intervention_num = 100
   
   # what subset of features to use in the simulation
   simulation_params$features_to_use_in_simulation = 1
@@ -109,9 +112,6 @@ initialise_user_simulation_params <- function(){
   # ignore parcels with size below this number of elements 
   simulation_params$max_site_screen_size_quantile = 0.99
   
-  #how many development/offset actions take place
-  simulation_params$intervention_num = 0
-  
   # when the interventions are set to take place, in this case force to occur once per year
   simulation_params$intervention_vec = build_stochastic_intervention(time_steps = simulation_params$time_steps, 
                                                                      intervention_start = 1, 
@@ -140,21 +140,12 @@ initialise_user_simulation_params <- function(){
   # 'weighted'. Note tha weighted requires an additonal weighting layer. If
   # you are running on your own data you need to specify the weights file in
   # intialise_routines.R  (or put the files in simulation_inputs)
-  simulation_params$development_selection_type = 'random'  
+  simulation_params$development_selection_type = 'stochastic'  
   
   # The time horizon in which the offset gains need to equal the devlopment impact
   simulation_params$offset_time_horizon = 30
 
   simulation_params$offset_multiplier = 1
-  
-  simulation_params$unregulated_loss_type = 'unregulated_stochastic_development'  # switch to allow unregulated development (i.e. without offsets)
-  
-  # when the interventions are set to take place, in this case force to occur once per year
-  simulation_params$unregulated_intervention_vec = build_stochastic_intervention(time_steps = simulation_params$time_steps, 
-                                                                                 intervention_start = 1, 
-                                                                                 intervention_end = simulation_params$time_steps, 
-                                                                                 intervention_num = 1000, 
-                                                                                 sd = 1)
   
   return(simulation_params)
   
@@ -251,7 +242,7 @@ initialise_user_output_params <- function(){
   output_params$output_folder = vector()
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
-  output_params$output_type = 'png' #'plot', 'png', 'raster'
+  output_params$output_type = 'plot' #'plot', 'png', 'raster'
   output_params$map_vals = TRUE
   output_params$write_pdf = TRUE
   output_params$plot_site = TRUE
