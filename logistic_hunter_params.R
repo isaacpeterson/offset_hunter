@@ -5,6 +5,7 @@ initialise_user_global_params <- function(){
   global_params$simulation_folder = paste0(path.expand('~'), '/offset_data/hunter/')
   
   # identify what feature rasters to work with
+
   global_params$feature_raster_files = paste0(global_params$simulation_folder, 'MNES_data/species_layers_MNES/', 
                                               list.files(path = paste0(global_params$simulation_folder, '/MNES_data/species_layers_MNES/'), 
                                                          all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
@@ -13,10 +14,17 @@ initialise_user_global_params <- function(){
   # layer containing data on site ID's - this will not change
   global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'hunter_site_IDs.tif')
   
+  # what subset of features to use in the simulation
+  global_params$features_to_use_in_simulation = 1
+  
+  # Where simulation outputs will be written
+  
+  global_params$time_steps = 50
+  
   global_params$number_of_cores = 'all'
   
   # The number of realizations to run
-  global_params$realisation_num = 4
+  global_params$realisation_num = 1
   
   global_params$run_from_simulated_data = FALSE
   
@@ -30,13 +38,16 @@ initialise_user_global_params <- function(){
   global_params$overwrite_offset_probability_list = FALSE
   global_params$overwrite_unregulated_probability_list = FALSE
   
-  
   # params to govern whether dynamics are overwritten each time (TRUE) or not (FALSE)
   
+  # if a file is supplied set this to false to use values in provided list of dynamics, otherwise set to true for on the fly dynamics calculations
   global_params$overwrite_management_dynamics = TRUE
+  # if a file is supplied set this to false to use values in provided list of dynamics, otherwise set to true for on the fly dynamics calculations
   global_params$overwrite_feature_dynamics = TRUE
+  # if a file is supplied set this to false to use values in provided raster layer of condition classes, otherwise set to true for on the fly condition class calculations
   global_params$overwrite_condition_classes = TRUE
-  global_params$overwrite_site_features = TRUE
+  global_params$overwrite_features = TRUE
+
   return(global_params)
 }
 
@@ -77,47 +88,32 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # allow pass of credit to simulation - can be used to run developments without offsets by setting value to large
-  simulation_params$initial_credit = 0
-  #how many development/offset actions take place
-  simulation_params$intervention_num = 100
-  
-  # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1
+  simulation_params$initial_credit = list(0)
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
-  simulation_params$features_to_use_in_offset_calc = simulation_params$features_to_use_in_simulation
+  simulation_params$features_to_use_in_offset_calc = list(simulation_params$features_to_use_in_simulation)
   
-  simulation_params$features_to_use_in_offset_intervention = simulation_params$features_to_use_in_simulation
+  simulation_params$features_to_use_in_offset_intervention = list(simulation_params$features_to_use_in_simulation)
   
   #series of parameters that are passed to user_tranfrom_function i.e how the metric is calculated
   
-  simulation_params$transform_params = rep(1, length(simulation_params$features_to_use_in_simulation))
+  simulation_params$transform_params = list(rep(1, length(simulation_params$features_to_use_in_simulation)))
   
-  simulation_params$use_offset_metric = TRUE
-  
-  #how many iterations the simulation runs for
-  simulation_params$time_steps = 50
+  simulation_params$use_offset_metric = list(TRUE)
   
   # The maximum number of sites can be selected to offset a single development
-  simulation_params$max_offset_parcel_num = 10
+  simulation_params$max_offset_parcel_num = list(10)
   
   # Stops the offset from delivering any further gains once it has acheived the gains required
-  simulation_params$limit_offset_restoration = TRUE
+  simulation_params$limit_offset_restoration = list(TRUE)
   
   # The probability per parcel of it being unregulatedly cleared, every parcel gets set to this number - set to zero to turn off
-  simulation_params$unregulated_loss_prob = 0
+  simulation_params$unregulated_loss_prob = list(0)
   
   # Exclude parcels with less than this number of pixels.
-  simulation_params$min_site_screen_size = 5
+  simulation_params$min_site_screen_size = list(5)
   # ignore parcels with size below this number of elements 
-  simulation_params$max_site_screen_size_quantile = 0.99
-  
-  # when the interventions are set to take place, in this case force to occur once per year
-  simulation_params$intervention_vec = build_stochastic_intervention(time_steps = simulation_params$time_steps, 
-                                                                     intervention_start = 1, 
-                                                                     intervention_end = simulation_params$time_steps, 
-                                                                     intervention_num = simulation_params$intervention_num, 
-                                                                     sd = 1)
+  simulation_params$max_site_screen_size_quantile = list(0.99)
   
   #   c('net_gains', 'restoration_gains', 'avoided_condition_decline', 'avoided_loss',
   #     'protected_condition', 'current_condition', 'restored_condition')
@@ -129,23 +125,23 @@ initialise_user_simulation_params <- function(){
   # are: 'current_condition' - losses are calcuated relative to the value of
   # the site at the time of the intervention 
   # 'future_condition' - is the do nothing trjectory of the development site.
-  simulation_params$dev_calc_type = 'future_condition'    #'future_condition', 'current_condition' 
+  simulation_params$dev_calc_type = list('future_condition')    #'future_condition', 'current_condition' 
   
   # Track accumulated credit from previous exchanges (eithger in current or
   # previous time step) and use them to allow developments to proceed if the
   # credit is large enough. FALSE means ignore any exces credit from offset exchanges
-  simulation_params$allow_developments_from_credit = TRUE
+  simulation_params$allow_developments_from_credit = list(TRUE)
   
   # How the development parcels are selected options are 'random' or
   # 'weighted'. Note tha weighted requires an additonal weighting layer. If
   # you are running on your own data you need to specify the weights file in
   # intialise_routines.R  (or put the files in simulation_inputs)
-  simulation_params$development_selection_type = 'stochastic'  
+  simulation_params$development_selection_type = list('stochastic')
   
   # The time horizon in which the offset gains need to equal the devlopment impact
-  simulation_params$offset_time_horizon = 30
+  simulation_params$offset_time_horizon = list(30)
 
-  simulation_params$offset_multiplier = 1
+  simulation_params$offset_multiplier = list(1)
   
   return(simulation_params)
   
@@ -177,23 +173,18 @@ initialise_user_feature_params <- function(features_to_use_in_simulation){
   
   feature_params$project_by_mean = TRUE
   
-  
   ########## DONT EDIT! #################
-  feature_params$management_update_dynamics_by_differential = TRUE
-  feature_params$background_update_dynamics_by_differential = TRUE
+  feature_params$update_management_dynamics_by_differential = TRUE
+  feature_params$update_background_dynamics_by_differential = TRUE
   
   feature_params$perform_management_dynamics_time_shift = TRUE
   feature_params$perform_background_dynamics_time_shift = FALSE
-  
-  feature_params$update_offset_dynamics_by_time_shift = TRUE
   
   feature_params$sample_management_dynamics = TRUE
   
   # Sample the background dynamics from a uniform distribution to they vary per site and per feature
   feature_params$sample_background_dynamics = TRUE
   ###########################
-  
-  
   
   feature_params$condition_class_bounds = rep(list(list(c(0, 0.5, 1))), length(features_to_use_in_simulation))
   
@@ -215,7 +206,7 @@ initialise_user_feature_params <- function(features_to_use_in_simulation){
   feature_params$management_dynamics_bounds <- create_dynamics_set(management_logistic_params_set, 
                                                                    feature_params$condition_class_bounds,
                                                                    feature_params$simulated_time_vec)
-  
+
   feature_params$initial_condition_class_bounds = lapply(seq_along(feature_params$background_dynamics_bounds), 
                                                          function(i) lapply(seq_along(feature_params$background_dynamics_bounds[[i]]), 
                                                                             function(j) c(feature_params$background_dynamics_bounds[[i]][[j]]$lower_bound[1], 
