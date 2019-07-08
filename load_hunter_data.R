@@ -34,7 +34,7 @@ build_probability_list <- function(weight_layer, land_parcels, site_indexes_to_e
 
 
 
-load_site_characteristics = TRUE
+load_site_characteristics = FALSE
 use_z_layer = TRUE
 sample_decline_rate = FALSE
 
@@ -82,12 +82,13 @@ if (load_site_characteristics == TRUE){
   GDA94.56 <- CRS("+proj=utm +zone=56 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
   
   site_ID_shp <- readOGR(dsn = paste0(data_folder, 'LH_property_2015'),  layer = "property")
-  site_ID_shp_transform <- spTransform(parcels_shp, GDA94.56) # project to correct CRS
-  site_ID_shp_cropped <- crop(parcels_shp_transform, extent(cadastre_msk))
-  site_ID_raster = shp_to_raster(shp = parcels_shp_cropped, raster_dims = dim(cadastre_msk))
+  site_ID_shp_transform <- spTransform(site_ID_shp, GDA94.56) # project to correct CRS
+  site_ID_shp_cropped <- crop(site_ID_shp_transform, extent(cadastre_msk))
+  site_ID_raster = shp_to_raster(shp = site_ID_shp_cropped, raster_dims = dim(cadastre_msk))
   extent(site_ID_raster) = extent(cadastre_msk)
   writeRaster(site_ID_raster, paste0(simulation_inputs_folder, 'hunter_site_IDs.tif'), overwrite = TRUE)
   site_characteristics = build_site_characteristics(raster_to_array(site_ID_raster))
+  
 } 
 
 

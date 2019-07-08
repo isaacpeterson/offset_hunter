@@ -82,7 +82,7 @@ create_dynamics_set <- function(logistic_params_set, condition_class_bounds, tim
 }
 
 
-initialise_user_simulation_params <- function(){ 
+initialise_user_simulation_params <- function(time_steps, features_to_use_in_simulation){ 
   
   
   simulation_params = list()
@@ -91,21 +91,33 @@ initialise_user_simulation_params <- function(){
   simulation_params$initial_credit = list(0)
   
   # The total number of layers to use in the offset calcuation (iterating from the start)
-  simulation_params$features_to_use_in_offset_calc = list(simulation_params$features_to_use_in_simulation)
+  simulation_params$features_to_use_in_offset_calc = list(features_to_use_in_simulation)
   
-  simulation_params$features_to_use_in_offset_intervention = list(simulation_params$features_to_use_in_simulation)
+  simulation_params$features_to_use_in_offset_intervention = list(features_to_use_in_simulation)
   
   #series of parameters that are passed to user_tranfrom_function i.e how the metric is calculated
   
-  simulation_params$transform_params = list(rep(1, length(simulation_params$features_to_use_in_simulation)))
+  simulation_params$transform_params = list(rep(1, length(features_to_use_in_simulation)))
   
   simulation_params$use_offset_metric = list(TRUE)
   
-  # The maximum number of sites can be selected to offset a single development
-  simulation_params$max_offset_parcel_num = list(10)
-  
   # Stops the offset from delivering any further gains once it has acheived the gains required
   simulation_params$limit_offset_restoration = list(TRUE)
+  
+  simulation_params$max_offset_parcel_num = list(10)
+  simulation_params$use_uncoupled_offsets = list(FALSE)
+  
+  simulation_params$uncoupled_offset_type = list('credit')
+  
+  simulation_params$uncoupled_offset_selection_type = list('stochastic')
+  simulation_params$development_selection_type = list('stochastic')
+  
+  # when the interventions are set to take place, in this case force to occur once per year
+  simulation_params$development_control = list(build_stochastic_intervention(time_steps = time_steps, 
+                                                                             intervention_start = 1, 
+                                                                             intervention_end = time_steps, 
+                                                                             intervention_num = 500, 
+                                                                             sd = 1))
   
   # The probability per parcel of it being unregulatedly cleared, every parcel gets set to this number - set to zero to turn off
   simulation_params$unregulated_loss_prob = list(0)
