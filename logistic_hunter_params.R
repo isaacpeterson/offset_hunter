@@ -15,7 +15,7 @@ initialise_user_global_params <- function(){
   global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'hunter_site_IDs.tif')
   
   # what subset of features to use in the simulation
-  global_params$features_to_use_in_simulation = 1
+  global_params$features_to_use_in_simulation = 1:10
   
   # Where simulation outputs will be written
   
@@ -241,7 +241,7 @@ setup_sub_plots <- function(nx, ny, x_space, y_space){
 
 initialise_user_output_params <- function(){
   output_params = list()
-  output_params$features_to_output = 1
+  output_params$features_to_output = 1:10
   output_params$output_folder = vector()
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
@@ -259,12 +259,12 @@ initialise_user_output_params <- function(){
   output_params$sets_to_plot = 1
   output_params$nx = 3 
   output_params$ny = 6
-  output_params$site_impact_plot_lims_set = list(rep(list(c(-1e2, 1e2)), 3))
-  output_params$program_impact_plot_lims_set = list(rep(list(c(-1e3, 1e3)), 3))
-  output_params$landscape_impact_plot_lims_set = list(rep(list(c(-1e4, 1e4)), 3))
-  output_params$site_outcome_plot_lims_set = list(rep(list(c(0, 1e2)), 3))
-  output_params$program_outcome_plot_lims_set = list(rep(list(c(0, 1e3)), 3))
-  output_params$landscape_outcome_plot_lims_set = list(rep(list(c(0, 1e4)), 3))
+  output_params$site_impact_plot_lims_set = list(rep(list(c(-1e2, 1e2)), max(output_params$features_to_output)))
+  output_params$program_impact_plot_lims_set = list(rep(list(c(-1e3, 1e3)),  max(output_params$features_to_output)))
+  output_params$landscape_impact_plot_lims_set = list(rep(list(c(-1e4, 1e4)),  max(output_params$features_to_output)))
+  output_params$site_outcome_plot_lims_set = list(rep(list(c(0, 1e2)),  max(output_params$features_to_output)))
+  output_params$program_outcome_plot_lims_set = list(rep(list(c(0, 1e3)),  max(output_params$features_to_output)))
+  output_params$landscape_outcome_plot_lims_set = list(rep(list(c(0, 1e4)),  max(output_params$features_to_output)))
   return(output_params)
 }
 
