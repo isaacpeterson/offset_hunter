@@ -1,0 +1,7 @@
+.Rhistory
+.Rapp.history
+.RData
+.DS_Store
+simulation_inputs/
+simulation_runs/
+.httr-oauth
