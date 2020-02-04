@@ -9,5 +9,5 @@ user_output_params <- initialise_user_output_params()
 
 #osim.run(user_global_params, user_simulation_params, user_feature_params, user_transform_function, loglevel = 'TRACE')
 
-simulation_folder = find_current_run_folder(base_folder = '~/offset_data/hunter/')
+simulation_folder = find_current_run_folder(base_folder = '~/offset_data/hunter_erica/')
 osim.output(user_output_params, simulation_folder, loglevel = 'TRACE')
