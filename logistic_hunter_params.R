@@ -2,31 +2,20 @@ initialise_user_global_params <- function(){
   
   global_params = list()
   
-#   global_params$simulation_folder = paste0(path.expand('~'), '/offset_data/hunter/')
-#   
-#   # identify what feature rasters to work with
-# 
-#   global_params$feature_raster_files = paste0(global_params$simulation_folder, 'MNES_data/species_layers_MNES/', 
-#                                               list.files(path = paste0(global_params$simulation_folder, '/MNES_data/species_layers_MNES/'), 
-#                                                          all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
-#                                                          include.dirs = FALSE, no.. = FALSE, pattern = '.tif'))
-#   
-#   # layer containing data on site ID's - this will not change
-#   global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'hunter_site_IDs.tif')
-  
-  global_params$simulation_folder = paste0(path.expand('~'), '/offset_data/hunter_erica/')
+  global_params$simulation_folder = paste0(path.expand('~'), '/offset_data/hunter/')
   
   # identify what feature rasters to work with
-  global_params$feature_raster_files = paste0(global_params$simulation_folder, 'species_maps/',
-                                              list.files(path = paste0(global_params$simulation_folder, 'species_maps/'), 
+  
+  global_params$feature_raster_files = paste0(global_params$simulation_folder, 'MNES_data/species_layers_MNES/', 
+                                              list.files(path = paste0(global_params$simulation_folder, '/MNES_data/species_layers_MNES/'), 
                                                          all.files = FALSE, full.names = FALSE, recursive = FALSE, ignore.case = FALSE,
                                                          include.dirs = FALSE, no.. = FALSE, pattern = '.tif'))
   
   # layer containing data on site ID's - this will not change
-  global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'GH_parcelRaster.tif')
+  global_params$planning_units_raster = paste0(global_params$simulation_folder, 'simulation_inputs/', 'hunter_site_IDs.tif')
   
   # what subset of features to use in the simulation
-  global_params$features_to_use_in_simulation = 1:5
+  global_params$features_to_use_in_simulation = 1:10
   
   # Where simulation outputs will be written
   
@@ -52,13 +41,13 @@ initialise_user_global_params <- function(){
   # params to govern whether dynamics are overwritten each time (TRUE) or not (FALSE)
   
   # if a file is supplied set this to false to use values in provided list of dynamics, otherwise set to true for on the fly dynamics calculations
-  global_params$overwrite_management_dynamics = FALSE
+  global_params$overwrite_management_dynamics = TRUE
   # if a file is supplied set this to false to use values in provided list of dynamics, otherwise set to true for on the fly dynamics calculations
-  global_params$overwrite_feature_dynamics = FALSE
+  global_params$overwrite_feature_dynamics = TRUE
   # if a file is supplied set this to false to use values in provided raster layer of condition classes, otherwise set to true for on the fly condition class calculations
   global_params$overwrite_condition_classes = FALSE
   global_params$overwrite_features = FALSE
-
+  
   return(global_params)
 }
 
@@ -163,7 +152,7 @@ initialise_user_simulation_params <- function(time_steps, features_to_use_in_sim
   
   # The time horizon in which the offset gains need to equal the devlopment impact
   simulation_params$offset_time_horizon = list(30)
-
+  
   simulation_params$offset_multiplier = list(1)
   
   return(simulation_params)
@@ -173,7 +162,7 @@ initialise_user_simulation_params <- function(time_steps, features_to_use_in_sim
 
 user_transform_function <- function(pool_vals, transform_params){
   #pool_vals is proivided as a nested list
-
+  
   scaled_scores <- lapply(seq_along(pool_vals), function(i) transform_params[i]/sum(transform_params)*100.68*(1 - exp(-5*( pool_vals[[i]]/transform_params[i] )^2.5) ))
   BAM_score <- sqrt(Reduce('+', scaled_scores))
   return(BAM_score)
@@ -190,7 +179,7 @@ initialise_user_feature_params <- function(features_to_use_in_simulation){
   feature_params$scale_features = TRUE
   
   feature_params$site_sample_type = 'trunc_norm'
-
+  
   feature_params$dynamics_sample_type = 'by_initial_value' #'by_initial_value' 
   # Sample the restoration rates from a uniform distribution to they vary per parcel and per feature
   feature_params$management_dynamics_sample_type = 'by_distribution'
@@ -230,7 +219,7 @@ initialise_user_feature_params <- function(features_to_use_in_simulation){
   feature_params$management_dynamics_bounds <- create_dynamics_set(management_logistic_params_set, 
                                                                    feature_params$condition_class_bounds,
                                                                    feature_params$simulated_time_vec)
-
+  
   feature_params$initial_condition_class_bounds = lapply(seq_along(feature_params$background_dynamics_bounds), 
                                                          function(i) lapply(seq_along(feature_params$background_dynamics_bounds[[i]]), 
                                                                             function(j) c(feature_params$background_dynamics_bounds[[i]][[j]]$lower_bound[1], 
@@ -253,18 +242,17 @@ setup_sub_plots <- function(nx, ny, x_space, y_space){
 
 initialise_user_output_params <- function(){
   output_params = list()
-  output_params$features_to_output = 0
+  output_params$features_to_output = 1:10
   output_params$output_folder = vector()
   output_params$plot_type = 'impacts' # can be 'outcomes'  or 'impacts' or 'none'
   output_params$realisation_num = 'all' # 'all' or number to plot
-  output_params$output_type = 'png' #'plot', 'png', 'raster'
+  output_params$output_type = 'plot' #'plot', 'png', 'raster'
   output_params$map_vals = TRUE
   output_params$write_pdf = TRUE
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
   output_params$plot_offset_metric = TRUE
-  output_params$output_block_offsets = TRUE
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
   output_params$plot_subset_type = 'all' #c('offset_action_type') # 'offset_calc_type', 'offset_action_type', offset_time_horizon'
   output_params$plot_subset_param = 'all' #c('maintain') # 'net_gains', 'restore', 15
