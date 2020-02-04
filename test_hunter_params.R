@@ -65,7 +65,7 @@ initialise_user_simulation_params <- function(){
   simulation_params = list()
   
   # what subset of features to use in the simulation
-  simulation_params$features_to_use_in_simulation = 1:10
+  simulation_params$features_to_use_in_simulation = 1:20
   
   simulation_params$transform_params = array(1, length(simulation_params$features_to_use_in_simulation))
   # The total number of layers to use in the offset calcuation (iterating from the start)
@@ -150,6 +150,7 @@ initialise_user_simulation_params <- function(){
 
 
 user_transform_function <- function(pool_vals, transform_params){
+  browser()
   scaled_scores <- lapply(seq_along(pool_vals), function(i) transform_params[i]/sum(transform_params)*100.68*(1 - exp(-5*( pool_vals[[i]]/transform_params[i] )^2.5) ))
   BAM_score <- sqrt(Reduce('+', scaled_scores[1:5]) * Reduce('+', scaled_scores[1:5]))
   return(BAM_score)

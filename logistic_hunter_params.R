@@ -26,7 +26,7 @@ initialise_user_global_params <- function(){
   # The number of realizations to run
   global_params$realisation_num = 1
   
-  global_params$run_from_simulated_data = FALSE
+  global_params$build_simulated_feature_layers = FALSE
   
   global_params$overwrite_site_characteristics = FALSE
   
@@ -45,8 +45,8 @@ initialise_user_global_params <- function(){
   # if a file is supplied set this to false to use values in provided list of dynamics, otherwise set to true for on the fly dynamics calculations
   global_params$overwrite_feature_dynamics = TRUE
   # if a file is supplied set this to false to use values in provided raster layer of condition classes, otherwise set to true for on the fly condition class calculations
-  global_params$overwrite_condition_classes = TRUE
-  global_params$overwrite_features = TRUE
+  global_params$overwrite_condition_classes = FALSE
+  global_params$overwrite_features = FALSE
 
   return(global_params)
 }
@@ -162,6 +162,7 @@ initialise_user_simulation_params <- function(time_steps, features_to_use_in_sim
 
 user_transform_function <- function(pool_vals, transform_params){
   #pool_vals is proivided as a nested list
+
   scaled_scores <- lapply(seq_along(pool_vals), function(i) transform_params[i]/sum(transform_params)*100.68*(1 - exp(-5*( pool_vals[[i]]/transform_params[i] )^2.5) ))
   BAM_score <- sqrt(Reduce('+', scaled_scores))
   return(BAM_score)
@@ -259,9 +260,11 @@ initialise_user_output_params <- function(){
   output_params$sets_to_plot = 1
   output_params$nx = 3 
   output_params$ny = 6
-  output_params$site_impact_plot_lims_set = list(rep(list(c(-1e2, 1e2)), max(output_params$features_to_output)))
+  output_params$site_impact_plot_lims_set = list(rep(list(c(-1e1, 1e1)), max(output_params$features_to_output)))
   output_params$program_impact_plot_lims_set = list(rep(list(c(-1e3, 1e3)),  max(output_params$features_to_output)))
   output_params$landscape_impact_plot_lims_set = list(rep(list(c(-1e4, 1e4)),  max(output_params$features_to_output)))
+  
+  
   output_params$site_outcome_plot_lims_set = list(rep(list(c(0, 1e2)),  max(output_params$features_to_output)))
   output_params$program_outcome_plot_lims_set = list(rep(list(c(0, 1e3)),  max(output_params$features_to_output)))
   output_params$landscape_outcome_plot_lims_set = list(rep(list(c(0, 1e4)),  max(output_params$features_to_output)))

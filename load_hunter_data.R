@@ -1,4 +1,3 @@
-rm(list = ls())
 library(rgdal)
 library(raster)
 library(rgeos)
@@ -97,6 +96,7 @@ if (load_site_characteristics == TRUE){
 mining_layer_filenames <- list.files(path = paste0(data_folder, 'mining_scenarios/'), pattern = '.tif', all.files = FALSE, 
                                 full.names = FALSE, recursive = FALSE, ignore.case = FALSE, 
                                 include.dirs = FALSE, no.. = FALSE)
+
 mining_layer = load_rasters(paste0(data_folder, 'mining_scenarios/', mining_layer_filenames), 'all')
 mining_layer <- crop(mining_layer, extent(cadastre_msk))
 mining_layer = raster_to_array(mining_layer)
