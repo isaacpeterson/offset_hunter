@@ -99,7 +99,7 @@ initialise_user_simulation_params <- function(time_steps, features_to_use_in_sim
   
   simulation_params$transform_params = list(rep(1, length(features_to_use_in_simulation)))
   
-  simulation_params$use_offset_metric = list(TRUE)
+  simulation_params$use_transform_metric = list(TRUE)
   
   # Stops the offset from delivering any further gains once it has acheived the gains required
   simulation_params$limit_offset_restoration = list(TRUE)
@@ -252,7 +252,7 @@ initialise_user_output_params <- function(){
   output_params$plot_site = TRUE
   output_params$plot_program = TRUE
   output_params$plot_landscape = TRUE
-  output_params$plot_offset_metric = TRUE
+  output_params$plot_transform_metric = TRUE
   output_params$scenario_vec = 'all' #c(1,4,7,10, 8, 2,3,5,6,9,11,12 ) #1:12
   output_params$plot_subset_type = 'all' #c('offset_action_type') # 'offset_calc_type', 'offset_action_type', offset_time_horizon'
   output_params$plot_subset_param = 'all' #c('maintain') # 'net_gains', 'restore', 15
